@@ -16,7 +16,7 @@ app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
 # Database connection
 # ----------------------------
 db = None
-for i in range(10):  # retry 10 times
+for i in range(10):
     try:
         db = mysql.connector.connect(
             host=os.environ.get("MYSQL_HOST", "sanreach_db"),
@@ -100,7 +100,6 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    # Fetch SMS logs for this user
     cursor = db.cursor(dictionary=True)
     cursor.execute("""
         SELECT DATE(sent_at) as day, dest, message, status, sent_at
@@ -109,8 +108,6 @@ def dashboard():
         ORDER BY sent_at DESC
     """, (session["user_id"],))
     sms_data = cursor.fetchall()
-
-    # Group by day
     day_wise = defaultdict(list)
     for row in sms_data:
         day_wise[row["day"]].append(row)
@@ -160,30 +157,29 @@ def send_sms():
     )
     db.commit()
 
-    # Return JSON if AJAX request
     if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return {"status": status, "message": message_flash}
 
-    # Fallback
     flash(message_flash)
     return redirect(url_for("dashboard"))
 
 # ----------------------------
-# Reports Route (AJAX day filter)
+# Reports Route (date-range)
 # ----------------------------
 @app.route("/reports")
 @login_required
 def reports():
-    day_filter = request.args.get("day")
+    start_date = request.args.get("start")
+    end_date = request.args.get("end")
     cursor = db.cursor(dictionary=True)
 
-    if day_filter:
+    if start_date and end_date:
         cursor.execute("""
             SELECT DATE(sent_at) as day, dest, message, status, sent_at
             FROM sms_logs
-            WHERE user_id=%s AND DATE(sent_at)=%s
+            WHERE user_id=%s AND DATE(sent_at) BETWEEN %s AND %s
             ORDER BY sent_at DESC
-        """, (session["user_id"], day_filter))
+        """, (session["user_id"], start_date, end_date))
     else:
         cursor.execute("""
             SELECT DATE(sent_at) as day, dest, message, status, sent_at
@@ -197,11 +193,10 @@ def reports():
     for row in sms_data:
         day_wise[row["day"]].append(row)
 
-    # If AJAX request, return only table HTML
     if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return render_template("_report_table.html", day_wise=day_wise)
+        return render_template("dashboard.html", day_wise=day_wise, username=session.get("username"), show_section="report")
 
-    return render_template("reports.html", day_wise=day_wise)
+    return render_template("dashboard.html", day_wise=day_wise, username=session.get("username"), show_section="report")
 
 # ----------------------------
 # Run Flask
