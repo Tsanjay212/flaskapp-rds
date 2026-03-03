@@ -4,20 +4,182 @@
 <meta charset="UTF-8">
 <title>SanReach Dashboard</title>
 <style>
-body { margin:0; font-family:"Segoe UI",sans-serif; background:linear-gradient(135deg,#ff6ec7,#845ec2,#00c6ff); color:#fff;}
-header {padding:20px;text-align:center;font-size:2em;font-weight:bold;}
-.sidebar {height:100vh;width:200px;position:fixed;top:0;left:0;background:linear-gradient(180deg,#0b3d91,#1a5bb8);padding-top:60px;display:flex;flex-direction:column;}
-.sidebar button {background:none;border:none;color:white;text-align:left;padding:15px 20px;font-size:1em;cursor:pointer;width:100%;border-left:4px solid transparent;transition:all 0.3s;}
-.sidebar button:hover,.sidebar button.active {background:rgba(255,255,255,0.2);border-left:4px solid #fff;}
-.main {margin-left:200px;padding:40px;}
-.card {background:rgba(255,255,255,0.1);padding:20px;border-radius:12px;margin-bottom:20px;}
-input,textarea,button {width:100%;padding:10px;margin:8px 0;border-radius:8px;border:none;}
-button.submit-btn {background:linear-gradient(135deg,#00c6ff,#0072ff);color:white;font-weight:bold;cursor:pointer;}
-button.submit-btn:hover {opacity:0.9;}
-.logout-btn {position:fixed;bottom:20px;left:20px;width:160px;background:linear-gradient(135deg,#ff5f6d,#ffc371);color:white;font-weight:bold;border:none;padding:10px;border-radius:8px;cursor:pointer;}
-.logout-btn:hover {opacity:0.9;}
-.section {display:none;}
-table th,table td {padding:8px;border:1px solid rgba(255,255,255,0.2);text-align:left;}
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+}
+
+/* HEADER */
+header {
+    background: #1f2937;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* SIDEBAR */
+.sidebar {
+    height: 100vh;
+    width: 220px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #111827;
+    padding-top: 80px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar button {
+    background: none;
+    border: none;
+    color: #d1d5db;
+    text-align: left;
+    padding: 14px 20px;
+    font-size: 15px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.sidebar button:hover,
+.sidebar button.active {
+    background: #2563eb;
+    color: white;
+}
+
+/* LOGOUT BUTTON */
+.logout-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 180px;
+    background: #ef4444;
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #dc2626;
+}
+
+/* MAIN CONTENT */
+.main {
+    margin-left: 220px;
+    padding: 40px;
+}
+
+/* CARDS */
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* HEADINGS */
+h2, h3, h4 {
+    margin-top: 0;
+    color: #111827;
+}
+
+/* INPUTS */
+input, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 6px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+/* BUTTONS */
+.submit-btn {
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.submit-btn:hover {
+    background: #1d4ed8;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+table thead {
+    background: #f3f4f6;
+}
+
+table th {
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+table td {
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+table tr:hover {
+    background: #f9fafb;
+}
+
+/* STATUS COLORS */
+.status-sent {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.status-failed {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+/* SECTIONS */
+.section {
+    display: none;
+}
+
+/* DATE FILTER FLEX */
+.report-filters {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
 </style>
 </head>
 <body>
@@ -81,7 +243,9 @@ table th,table td {padding:8px;border:1px solid rgba(255,255,255,0.2);text-align
                         <tbody>
                             {% for sms in logs %}
                             <tr style="background: rgba(255,255,255,0.05);">
-                                <td>{{ sms.dest }}</td><td>{{ sms.message }}</td><td>{{ sms.status }}</td><td>{{ sms.sent_at }}</td>
+                                <td>{{ sms.dest }}</td><td>{{ sms.message }}</td><td class="{{ 'status-sent' if sms.status == 'Sent' else 'status-failed' }}">
+    {{ sms.status }}
+</td><td>{{ sms.sent_at }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
