@@ -110,7 +110,8 @@ def register():
             flash(f"Error: {str(e)}", "danger")
             return redirect(url_for("register"))
 
-    return render_template("register.html")
+    # For GET requests, render the combined auth.html
+    return render_template("auth.html")
 
 @app.route("/logout")
 def logout():
