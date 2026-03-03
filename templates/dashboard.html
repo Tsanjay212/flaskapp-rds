@@ -3,25 +3,154 @@
 <head>
 <meta charset="UTF-8">
 <title>SanReach Dashboard</title>
+
 <style>
-body { margin:0; font-family:"Segoe UI",sans-serif; background:linear-gradient(135deg,#ff6ec7,#845ec2,#00c6ff); color:#fff;}
-header {padding:20px;text-align:center;font-size:2em;font-weight:bold;}
-.sidebar {height:100vh;width:200px;position:fixed;top:0;left:0;background:linear-gradient(180deg,#0b3d91,#1a5bb8);padding-top:60px;display:flex;flex-direction:column;}
-.sidebar button {background:none;border:none;color:white;text-align:left;padding:15px 20px;font-size:1em;cursor:pointer;width:100%;border-left:4px solid transparent;transition:all 0.3s;}
-.sidebar button:hover,.sidebar button.active {background:rgba(255,255,255,0.2);border-left:4px solid #fff;}
-.main {margin-left:200px;padding:40px;}
-.card {background:rgba(255,255,255,0.1);padding:20px;border-radius:12px;margin-bottom:20px;}
-input,textarea,button {width:100%;padding:10px;margin:8px 0;border-radius:8px;border:none;}
-button.submit-btn {background:linear-gradient(135deg,#00c6ff,#0072ff);color:white;font-weight:bold;cursor:pointer;}
-button.submit-btn:hover {opacity:0.9;}
-.logout-btn {position:fixed;bottom:20px;left:20px;width:160px;background:linear-gradient(135deg,#ff5f6d,#ffc371);color:white;font-weight:bold;border:none;padding:10px;border-radius:8px;cursor:pointer;}
-.logout-btn:hover {opacity:0.9;}
-.section {display:none;}
-table th,table td {padding:8px;border:1px solid rgba(255,255,255,0.2);text-align:left;}
+:root{
+  --bg-main:#f4f6f9;
+  --bg-card:#ffffff;
+  --sidebar-bg:#1f2937;
+  --sidebar-hover:#374151;
+  --primary:#2563eb;
+  --primary-hover:#1d4ed8;
+  --danger:#ef4444;
+  --text-dark:#111827;
+  --text-light:#f9fafb;
+  --border:#e5e7eb;
+}
+
+body{
+  margin:0;
+  font-family:"Segoe UI",sans-serif;
+  background:var(--bg-main);
+  color:var(--text-dark);
+}
+
+header{
+  padding:20px;
+  text-align:center;
+  font-size:1.8em;
+  font-weight:bold;
+  background:var(--bg-card);
+  border-bottom:1px solid var(--border);
+}
+
+/* Sidebar */
+.sidebar{
+  height:100vh;
+  width:220px;
+  position:fixed;
+  top:0;
+  left:0;
+  background:var(--sidebar-bg);
+  padding-top:80px;
+  display:flex;
+  flex-direction:column;
+}
+
+.sidebar button{
+  background:none;
+  border:none;
+  color:var(--text-light);
+  text-align:left;
+  padding:14px 20px;
+  font-size:1em;
+  cursor:pointer;
+  width:100%;
+  border-left:4px solid transparent;
+  transition:0.3s;
+}
+
+.sidebar button:hover,
+.sidebar button.active{
+  background:var(--sidebar-hover);
+  border-left:4px solid var(--primary);
+}
+
+.logout-btn{
+  position:absolute;
+  bottom:20px;
+  left:20px;
+  width:180px;
+  background:var(--danger);
+  color:white;
+  font-weight:bold;
+  border:none;
+  padding:10px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.logout-btn:hover{opacity:0.9;}
+
+/* Main */
+.main{
+  margin-left:220px;
+  padding:40px;
+}
+
+/* Cards */
+.card{
+  background:var(--bg-card);
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:20px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
+  border:1px solid var(--border);
+}
+
+/* Inputs */
+input, textarea{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:#f9fafb;
+  font-size:14px;
+}
+
+/* Buttons */
+button.submit-btn{
+  background:var(--primary);
+  color:white;
+  font-weight:bold;
+  border:none;
+  cursor:pointer;
+}
+
+button.submit-btn:hover{
+  background:var(--primary-hover);
+}
+
+.section{display:none;}
+
+/* Table */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+table th{
+  background:#f3f4f6;
+  padding:10px;
+  text-align:left;
+  border:1px solid var(--border);
+}
+
+table td{
+  padding:10px;
+  border:1px solid var(--border);
+}
+
+table tr:nth-child(even){
+  background:#f9fafb;
+}
 </style>
 </head>
+
 <body>
-<header>🚀 SanReach SMS Dashboard</header>
+
+<header>SanReach SMS Dashboard</header>
 
 <div class="sidebar">
     <button class="toggle-btn" data-target="send-section">Send SMS</button>
@@ -32,6 +161,7 @@ table th,table td {padding:8px;border:1px solid rgba(255,255,255,0.2);text-align
 </div>
 
 <div class="main">
+
     <!-- Welcome Section -->
     <div id="welcome-section" class="section">
         <div class="card">
@@ -48,11 +178,13 @@ table th,table td {padding:8px;border:1px solid rgba(255,255,255,0.2);text-align
             <form id="sms-form">
                 <label>Recipient Number</label>
                 <input type="text" name="number" placeholder="e.g. 917989106669" required>
+
                 <label>Type your message</label>
                 <textarea name="message" placeholder="Your message..." rows="4" required></textarea>
+
                 <button type="submit" class="submit-btn">Send SMS</button>
             </form>
-            <div id="sms-response" style="margin-top:10px;"></div>
+            <div id="sms-response" style="margin-top:10px;font-weight:bold;"></div>
         </div>
     </div>
 
@@ -60,101 +192,97 @@ table th,table td {padding:8px;border:1px solid rgba(255,255,255,0.2);text-align
     <div id="report-section" class="section">
         <div class="card">
             <h3>Reports</h3>
-            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
+
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px; flex-wrap:wrap;">
                 <label>From:</label>
                 <input type="date" id="report-start-date">
                 <label>To:</label>
                 <input type="date" id="report-end-date">
-                <button id="report-search-btn" class="submit-btn" style="width:auto; padding:5px 10px;">Search</button>
-                <button id="report-export-btn" class="submit-btn" style="width:auto; padding:5px 10px; background:linear-gradient(135deg,#ff9a9e,#fecfef);">Export CSV</button>
+
+                <button id="report-search-btn" class="submit-btn" style="width:auto;padding:8px 15px;">Search</button>
+                <button id="report-export-btn" class="submit-btn" style="width:auto;padding:8px 15px;background:#10b981;">Export CSV</button>
             </div>
+
             <div id="report-table">
                 {% for day, logs in day_wise.items() %}
-                <div class="card" style="margin-bottom:10px;">
+                <div class="card">
                     <h4>{{ day }}</h4>
-                    <table style="width:100%; border-collapse: collapse;">
+                    <table>
                         <thead>
-                            <tr style="background: rgba(255,255,255,0.2);">
-                                <th>Recipient</th><th>Message</th><th>Status</th><th>Sent At</th>
+                            <tr>
+                                <th>Recipient</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Sent At</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for sms in logs %}
-                            <tr style="background: rgba(255,255,255,0.05);">
-                                <td>{{ sms.dest }}</td><td>{{ sms.message }}</td><td>{{ sms.status }}</td><td>{{ sms.sent_at }}</td>
+                            <tr>
+                                <td>{{ sms.dest }}</td>
+                                <td>{{ sms.message }}</td>
+                                <td>{{ sms.status }}</td>
+                                <td>{{ sms.sent_at }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
                 {% endfor %}
+
                 {% if not day_wise %}
                 <p>No SMS records found.</p>
                 {% endif %}
             </div>
         </div>
     </div>
+
 </div>
 
 <script>
 // Section toggle
-const buttons = document.querySelectorAll(".toggle-btn");
-const sections = document.querySelectorAll(".section");
+const buttons=document.querySelectorAll(".toggle-btn");
+const sections=document.querySelectorAll(".section");
+
 function showSection(id){
     buttons.forEach(b=>b.classList.remove("active"));
-    const btn = document.querySelector(`.toggle-btn[data-target="${id}"]`);
+    const btn=document.querySelector(`.toggle-btn[data-target="${id}"]`);
     if(btn) btn.classList.add("active");
     sections.forEach(sec=>sec.style.display="none");
-    const target = document.getElementById(id);
+    const target=document.getElementById(id);
     if(target) target.style.display="block";
 }
+
 {% if show_section %}
 showSection("{{ show_section }}");
 {% else %}
 showSection("welcome-section");
 {% endif %}
-buttons.forEach(btn=>btn.addEventListener("click",()=>{showSection(btn.dataset.target);}));
+
+buttons.forEach(btn=>btn.addEventListener("click",()=>{showSection(btn.dataset.target);}))
+
 // AJAX Send SMS
 document.getElementById("sms-form").addEventListener("submit",function(e){
     e.preventDefault();
-    const formData = new FormData(this);
-    fetch("{{ url_for('send_sms') }}",{method:"POST",headers:{"X-Requested-With":"XMLHttpRequest"},body:formData})
+    const formData=new FormData(this);
+
+    fetch("{{ url_for('send_sms') }}",{
+        method:"POST",
+        headers:{"X-Requested-With":"XMLHttpRequest"},
+        body:formData
+    })
     .then(res=>res.json())
     .then(res=>{
         const respDiv=document.getElementById("sms-response");
         respDiv.innerHTML=res.message;
-        respDiv.style.color=res.status==="Sent"?"lightgreen":"orange";
+        respDiv.style.color=res.status==="Sent"?"green":"orange";
         if(res.status==="Sent") this.reset();
     })
-    .catch(err=>{
+    .catch(()=>{
         const respDiv=document.getElementById("sms-response");
-        respDiv.innerHTML="⚠️ Error sending SMS";
+        respDiv.innerHTML="Error sending SMS";
         respDiv.style.color="orange";
     });
-});
-
-// Reports date-range search
-function fetchReports(startDate=null,endDate=null){
-    let url="/reports";
-    if(startDate&&endDate) url+=`?start=${startDate}&end=${endDate}`;
-    fetch(url,{headers:{"X-Requested-With":"XMLHttpRequest"}})
-    .then(res=>res.text())
-    .then(html=>{document.getElementById("report-table").innerHTML=html;});
-}
-
-document.getElementById("report-search-btn").addEventListener("click",function(){
-    const start=document.getElementById("report-start-date").value;
-    const end=document.getElementById("report-end-date").value;
-    if(!start||!end){alert("Please select both start and end dates.");return;}
-    fetchReports(start,end);
-});
-
-// Export CSV button
-document.getElementById("report-export-btn").addEventListener("click",function(){
-    const start=document.getElementById("report-start-date").value;
-    const end=document.getElementById("report-end-date").value;
-    if(!start||!end){alert("Please select both start and end dates.");return;}
-    window.location=`/reports?start=${start}&end=${end}&export=csv`;
 });
 </script>
 
