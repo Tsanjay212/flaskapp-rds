@@ -60,12 +60,13 @@ table th,table td {padding:8px;border:1px solid rgba(255,255,255,0.2);text-align
     <div id="report-section" class="section">
         <div class="card">
             <h3>Reports</h3>
-            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
                 <label>From:</label>
                 <input type="date" id="report-start-date">
                 <label>To:</label>
                 <input type="date" id="report-end-date">
                 <button id="report-search-btn" class="submit-btn" style="width:auto; padding:5px 10px;">Search</button>
+                <button id="report-export-btn" class="submit-btn" style="width:auto; padding:5px 10px; background:linear-gradient(135deg,#ff9a9e,#fecfef);">Export CSV</button>
             </div>
             <div id="report-table">
                 {% for day, logs in day_wise.items() %}
@@ -131,6 +132,7 @@ document.getElementById("sms-form").addEventListener("submit",function(e){
         respDiv.style.color="orange";
     });
 });
+
 // Reports date-range search
 function fetchReports(startDate=null,endDate=null){
     let url="/reports";
@@ -139,12 +141,22 @@ function fetchReports(startDate=null,endDate=null){
     .then(res=>res.text())
     .then(html=>{document.getElementById("report-table").innerHTML=html;});
 }
+
 document.getElementById("report-search-btn").addEventListener("click",function(){
     const start=document.getElementById("report-start-date").value;
     const end=document.getElementById("report-end-date").value;
     if(!start||!end){alert("Please select both start and end dates.");return;}
     fetchReports(start,end);
 });
+
+// Export CSV button
+document.getElementById("report-export-btn").addEventListener("click",function(){
+    const start=document.getElementById("report-start-date").value;
+    const end=document.getElementById("report-end-date").value;
+    if(!start||!end){alert("Please select both start and end dates.");return;}
+    window.location=`/reports?start=${start}&end=${end}&export=csv`;
+});
 </script>
+
 </body>
 </html>

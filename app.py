@@ -166,13 +166,18 @@ def send_sms():
 # ----------------------------
 # Reports Route (date-range)
 # ----------------------------
+import csv
+from io import StringIO
+from flask import Response
+
 @app.route("/reports")
 @login_required
 def reports():
     start_date = request.args.get("start")
     end_date = request.args.get("end")
-    cursor = db.cursor(dictionary=True)
+    export_csv = request.args.get("export")
 
+    cursor = db.cursor(dictionary=True)
     if start_date and end_date:
         cursor.execute("""
             SELECT DATE(sent_at) as day, dest, message, status, sent_at
@@ -193,8 +198,20 @@ def reports():
     for row in sms_data:
         day_wise[row["day"]].append(row)
 
+    if export_csv == "1":
+        # Create CSV
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["Date","Recipient","Message","Status","Sent At"])
+        for day, logs in day_wise.items():
+            for sms in logs:
+                writer.writerow([day, sms["dest"], sms["message"], sms["status"], sms["sent_at"]])
+        output.seek(0)
+        return Response(output, mimetype="text/csv",
+                        headers={"Content-Disposition":"attachment;filename=sms_report.csv"})
+
+    # AJAX request
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        # Return only table HTML
         table_html = ""
         for day, logs in day_wise.items():
             table_html += f'<div class="card" style="margin-bottom:10px;"><h4>{day}</h4><table style="width:100%; border-collapse: collapse;"><thead><tr style="background: rgba(255,255,255,0.2);"><th>Recipient</th><th>Message</th><th>Status</th><th>Sent At</th></tr></thead><tbody>'
