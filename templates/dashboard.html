@@ -18,20 +18,50 @@
   --border:#e5e7eb;
 }
 
+/* Dark Mode Variables */
+body.dark{
+  --bg-main:#111827;
+  --bg-card:#1f2937;
+  --sidebar-bg:#0f172a;
+  --sidebar-hover:#1e293b;
+  --primary:#3b82f6;
+  --primary-hover:#2563eb;
+  --text-dark:#f9fafb;
+  --border:#374151;
+}
+
 body{
   margin:0;
   font-family:"Segoe UI",sans-serif;
   background:var(--bg-main);
   color:var(--text-dark);
+  transition:0.3s;
 }
 
 header{
   padding:20px;
-  text-align:center;
-  font-size:1.8em;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:1.5em;
   font-weight:bold;
   background:var(--bg-card);
   border-bottom:1px solid var(--border);
+}
+
+/* Toggle Button */
+.theme-toggle{
+  cursor:pointer;
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:8px 15px;
+  border-radius:20px;
+  font-size:14px;
+}
+
+.theme-toggle:hover{
+  background:var(--primary-hover);
 }
 
 /* Sidebar */
@@ -53,9 +83,7 @@ header{
   color:var(--text-light);
   text-align:left;
   padding:14px 20px;
-  font-size:1em;
   cursor:pointer;
-  width:100%;
   border-left:4px solid transparent;
   transition:0.3s;
 }
@@ -80,41 +108,37 @@ header{
   cursor:pointer;
 }
 
-.logout-btn:hover{opacity:0.9;}
-
-/* Main */
 .main{
   margin-left:220px;
   padding:40px;
 }
 
-/* Cards */
 .card{
   background:var(--bg-card);
   padding:20px;
   border-radius:12px;
   margin-bottom:20px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.05);
   border:1px solid var(--border);
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Inputs */
 input, textarea{
   width:100%;
   padding:10px;
   margin:8px 0;
   border-radius:8px;
   border:1px solid var(--border);
-  background:#f9fafb;
-  font-size:14px;
+  background:transparent;
+  color:var(--text-dark);
 }
 
-/* Buttons */
 button.submit-btn{
   background:var(--primary);
   color:white;
   font-weight:bold;
   border:none;
+  padding:10px;
+  border-radius:8px;
   cursor:pointer;
 }
 
@@ -124,33 +148,30 @@ button.submit-btn:hover{
 
 .section{display:none;}
 
-/* Table */
 table{
   width:100%;
   border-collapse:collapse;
 }
 
 table th{
-  background:#f3f4f6;
   padding:10px;
-  text-align:left;
-  border:1px solid var(--border);
+  background:var(--sidebar-hover);
+  color:var(--text-light);
 }
 
 table td{
   padding:10px;
   border:1px solid var(--border);
 }
-
-table tr:nth-child(even){
-  background:#f9fafb;
-}
 </style>
 </head>
 
 <body>
 
-<header>SanReach SMS Dashboard</header>
+<header>
+  <div>SanReach SMS Dashboard</div>
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+</header>
 
 <div class="sidebar">
     <button class="toggle-btn" data-target="send-section">Send SMS</button>
@@ -162,128 +183,79 @@ table tr:nth-child(even){
 
 <div class="main">
 
-    <!-- Welcome Section -->
-    <div id="welcome-section" class="section">
-        <div class="card">
-            <h2>Welcome {{ username }}!</h2>
-            <p>Welcome to <strong>SanReach</strong> – your SMS dashboard.</p>
-            <p>Select an option from the left to get started.</p>
-        </div>
+<div id="welcome-section" class="section">
+  <div class="card">
+    <h2>Welcome {{ username }}!</h2>
+    <p>Welcome to <strong>SanReach</strong>.</p>
+  </div>
+</div>
+
+<div id="send-section" class="section">
+  <div class="card">
+    <h3>Send SMS</h3>
+    <form id="sms-form">
+      <input type="text" name="number" placeholder="Recipient number" required>
+      <textarea name="message" rows="4" placeholder="Your message..." required></textarea>
+      <button type="submit" class="submit-btn">Send SMS</button>
+    </form>
+    <div id="sms-response" style="margin-top:10px;font-weight:bold;"></div>
+  </div>
+</div>
+
+<div id="report-section" class="section">
+  <div class="card">
+    <h3>Reports</h3>
+    <div id="report-table">
+      {% if not day_wise %}
+      <p>No SMS records found.</p>
+      {% endif %}
     </div>
-
-    <!-- Send SMS Section -->
-    <div id="send-section" class="section">
-        <div class="card">
-            <h3>Send SMS</h3>
-            <form id="sms-form">
-                <label>Recipient Number</label>
-                <input type="text" name="number" placeholder="e.g. 917989106669" required>
-
-                <label>Type your message</label>
-                <textarea name="message" placeholder="Your message..." rows="4" required></textarea>
-
-                <button type="submit" class="submit-btn">Send SMS</button>
-            </form>
-            <div id="sms-response" style="margin-top:10px;font-weight:bold;"></div>
-        </div>
-    </div>
-
-    <!-- Reports Section -->
-    <div id="report-section" class="section">
-        <div class="card">
-            <h3>Reports</h3>
-
-            <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px; flex-wrap:wrap;">
-                <label>From:</label>
-                <input type="date" id="report-start-date">
-                <label>To:</label>
-                <input type="date" id="report-end-date">
-
-                <button id="report-search-btn" class="submit-btn" style="width:auto;padding:8px 15px;">Search</button>
-                <button id="report-export-btn" class="submit-btn" style="width:auto;padding:8px 15px;background:#10b981;">Export CSV</button>
-            </div>
-
-            <div id="report-table">
-                {% for day, logs in day_wise.items() %}
-                <div class="card">
-                    <h4>{{ day }}</h4>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Recipient</th>
-                                <th>Message</th>
-                                <th>Status</th>
-                                <th>Sent At</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for sms in logs %}
-                            <tr>
-                                <td>{{ sms.dest }}</td>
-                                <td>{{ sms.message }}</td>
-                                <td>{{ sms.status }}</td>
-                                <td>{{ sms.sent_at }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% endfor %}
-
-                {% if not day_wise %}
-                <p>No SMS records found.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+  </div>
+</div>
 
 </div>
 
 <script>
+// Theme Toggle
+function toggleTheme(){
+  const body=document.body;
+  const btn=document.querySelector(".theme-toggle");
+  body.classList.toggle("dark");
+
+  if(body.classList.contains("dark")){
+    localStorage.setItem("theme","dark");
+    btn.innerHTML="☀ Light Mode";
+  }else{
+    localStorage.setItem("theme","light");
+    btn.innerHTML="🌙 Dark Mode";
+  }
+}
+
+// Load Saved Theme
+window.onload=function(){
+  const savedTheme=localStorage.getItem("theme");
+  if(savedTheme==="dark"){
+    document.body.classList.add("dark");
+    document.querySelector(".theme-toggle").innerHTML="☀ Light Mode";
+  }
+};
+
 // Section toggle
 const buttons=document.querySelectorAll(".toggle-btn");
 const sections=document.querySelectorAll(".section");
 
 function showSection(id){
-    buttons.forEach(b=>b.classList.remove("active"));
-    const btn=document.querySelector(`.toggle-btn[data-target="${id}"]`);
-    if(btn) btn.classList.add("active");
-    sections.forEach(sec=>sec.style.display="none");
-    const target=document.getElementById(id);
-    if(target) target.style.display="block";
+  buttons.forEach(b=>b.classList.remove("active"));
+  const btn=document.querySelector(`.toggle-btn[data-target="${id}"]`);
+  if(btn) btn.classList.add("active");
+  sections.forEach(sec=>sec.style.display="none");
+  const target=document.getElementById(id);
+  if(target) target.style.display="block";
 }
 
-{% if show_section %}
-showSection("{{ show_section }}");
-{% else %}
 showSection("welcome-section");
-{% endif %}
-
 buttons.forEach(btn=>btn.addEventListener("click",()=>{showSection(btn.dataset.target);}))
 
-// AJAX Send SMS
-document.getElementById("sms-form").addEventListener("submit",function(e){
-    e.preventDefault();
-    const formData=new FormData(this);
-
-    fetch("{{ url_for('send_sms') }}",{
-        method:"POST",
-        headers:{"X-Requested-With":"XMLHttpRequest"},
-        body:formData
-    })
-    .then(res=>res.json())
-    .then(res=>{
-        const respDiv=document.getElementById("sms-response");
-        respDiv.innerHTML=res.message;
-        respDiv.style.color=res.status==="Sent"?"green":"orange";
-        if(res.status==="Sent") this.reset();
-    })
-    .catch(()=>{
-        const respDiv=document.getElementById("sms-response");
-        respDiv.innerHTML="Error sending SMS";
-        respDiv.style.color="orange";
-    });
-});
 </script>
 
 </body>
