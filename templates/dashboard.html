@@ -13,7 +13,6 @@
   --primary:#2563eb;
   --primary-hover:#1d4ed8;
   --danger:#ef4444;
-  --success:#16a34a;
   --text-dark:#111827;
   --text-light:#f9fafb;
   --border:#e5e7eb;
@@ -46,20 +45,20 @@ header{
   justify-content:space-between;
   align-items:center;
   padding:0 30px;
-  font-size:1.4em;
+  font-size:1.5em;
   font-weight:bold;
   background:var(--bg-card);
   border-bottom:1px solid var(--border);
 }
 
-/* Theme Toggle */
+/* Theme Button */
 .theme-toggle{
-  cursor:pointer;
   background:var(--primary);
   color:white;
   border:none;
   padding:8px 15px;
   border-radius:20px;
+  cursor:pointer;
 }
 
 .theme-toggle:hover{
@@ -101,7 +100,6 @@ header{
   border-left:4px solid var(--primary);
 }
 
-/* Logout */
 .logout-container{
   padding:20px;
 }
@@ -124,7 +122,6 @@ header{
   padding:40px;
 }
 
-/* Cards */
 .card{
   background:var(--bg-card);
   padding:20px;
@@ -134,7 +131,6 @@ header{
   box-shadow:0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Inputs */
 input, textarea{
   width:100%;
   padding:10px;
@@ -145,11 +141,12 @@ input, textarea{
   color:var(--text-dark);
 }
 
-/* Buttons */
 button.submit-btn{
   background:var(--primary);
   color:white;
   font-weight:bold;
+  border:none;
+  padding:10px;
   cursor:pointer;
 }
 
@@ -159,14 +156,13 @@ button.submit-btn:hover{
 
 .section{display:none;}
 
-/* Tables */
 table{
   width:100%;
   border-collapse:collapse;
 }
 
 table th{
-  padding:10px;
+  padding:8px;
   background:var(--sidebar-hover);
   color:var(--text-light);
 }
@@ -200,76 +196,76 @@ table td{
 
 <div class="main">
 
-<!-- Welcome Section -->
-<div id="welcome-section" class="section">
-    <div class="card">
-        <h2>Welcome {{ username }}!</h2>
-        <p>Welcome to <strong>SanReach</strong> – your SMS dashboard.</p>
-        <p>Select an option from the left to get started.</p>
-    </div>
-</div>
-
-<!-- Send SMS Section -->
-<div id="send-section" class="section">
-    <div class="card">
-        <h3>Send SMS</h3>
-        <form id="sms-form">
-            <label>Recipient Number</label>
-            <input type="text" name="number" placeholder="91798xxxx" required>
-            <label>Type your message</label>
-            <textarea name="message" rows="4" required></textarea>
-            <button type="submit" class="submit-btn">Send SMS</button>
-        </form>
-        <div id="sms-response" style="margin-top:10px;"></div>
-    </div>
-</div>
-
-<!-- Reports Section -->
-<div id="report-section" class="section">
-    <div class="card">
-        <h3>Reports</h3>
-        <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
-            <label>From:</label>
-            <input type="date" id="report-start-date">
-            <label>To:</label>
-            <input type="date" id="report-end-date">
-            <button id="report-search-btn" class="submit-btn" style="width:auto; padding:5px 10px;">Search</button>
-            <button id="report-export-btn" class="submit-btn" style="width:auto; padding:5px 10px; background:#10b981;">Export CSV</button>
+    <!-- Welcome Section -->
+    <div id="welcome-section" class="section">
+        <div class="card">
+            <h2>Welcome {{ username }}!</h2>
+            <p>Welcome to <strong>SanReach</strong> – your SMS dashboard.</p>
+            <p>Select an option from the left to get started.</p>
         </div>
-        <div id="report-table">
-            {% for day, logs in day_wise.items() %}
-            <div class="card" style="margin-bottom:10px;">
-                <h4>{{ day }}</h4>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Recipient</th><th>Message</th><th>Status</th><th>Sent At</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for sms in logs %}
-                        <tr>
-                            <td>{{ sms.dest }}</td>
-                            <td>{{ sms.message }}</td>
-                            <td>{{ sms.status }}</td>
-                            <td>{{ sms.sent_at }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    </div>
+
+    <!-- Send SMS Section -->
+    <div id="send-section" class="section">
+        <div class="card">
+            <h3>Send SMS</h3>
+            <form id="sms-form">
+                <label>Recipient Number</label>
+                <input type="text" name="number" placeholder="e.g. 917989106669" required>
+                <label>Type your message</label>
+                <textarea name="message" rows="4" required></textarea>
+                <button type="submit" class="submit-btn">Send SMS</button>
+            </form>
+            <div id="sms-response" style="margin-top:10px;"></div>
+        </div>
+    </div>
+
+    <!-- Reports Section -->
+    <div id="report-section" class="section">
+        <div class="card">
+            <h3>Reports</h3>
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
+                <label>From:</label>
+                <input type="date" id="report-start-date">
+                <label>To:</label>
+                <input type="date" id="report-end-date">
+                <button id="report-search-btn" class="submit-btn" style="width:auto; padding:5px 10px;">Search</button>
+                <button id="report-export-btn" class="submit-btn" style="width:auto; padding:5px 10px; background:#10b981;">Export CSV</button>
             </div>
-            {% endfor %}
-            {% if not day_wise %}
-            <p>No SMS records found.</p>
-            {% endif %}
+            <div id="report-table">
+                {% for day, logs in day_wise.items() %}
+                <div class="card" style="margin-bottom:10px;">
+                    <h4>{{ day }}</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Recipient</th><th>Message</th><th>Status</th><th>Sent At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sms in logs %}
+                            <tr>
+                                <td>{{ sms.dest }}</td>
+                                <td>{{ sms.message }}</td>
+                                <td>{{ sms.status }}</td>
+                                <td>{{ sms.sent_at }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endfor %}
+                {% if not day_wise %}
+                <p>No SMS records found.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
-</div>
 
 </div>
 
 <script>
-// Theme Toggle
+// Theme Toggle (safe, does not affect your logic)
 function toggleTheme(){
   const body=document.body;
   const btn=document.querySelector(".theme-toggle");
@@ -284,18 +280,18 @@ function toggleTheme(){
   }
 }
 
-window.onload=function(){
+window.addEventListener("load",function(){
   const savedTheme=localStorage.getItem("theme");
   if(savedTheme==="dark"){
     document.body.classList.add("dark");
     document.querySelector(".theme-toggle").innerHTML="☀ Light Mode";
   }
-};
+});
 </script>
 
-<!-- ⚠️ Your Original JS Below (UNCHANGED) -->
+<!-- YOUR ORIGINAL SCRIPT BELOW (UNCHANGED) -->
 <script>
-/* --- Your full original JS remains exactly same --- */
+/* KEEP YOUR ORIGINAL JS EXACTLY AS IT WAS HERE */
 </script>
 
 </body>
