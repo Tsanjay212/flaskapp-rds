@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>SanReach Dashboard</title>
+
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -23,7 +26,6 @@ header {
     text-align: center;
     font-size: 22px;
     font-weight: 600;
-    letter-spacing: 1px;
 }
 
 /* SIDEBAR */
@@ -48,7 +50,7 @@ header {
     font-size: 15px;
     cursor: pointer;
     width: 100%;
-    transition: all 0.2s ease;
+    transition: 0.2s;
 }
 
 .sidebar button:hover,
@@ -57,7 +59,6 @@ header {
     color: white;
 }
 
-/* LOGOUT BUTTON */
 .logout-btn {
     position: absolute;
     bottom: 20px;
@@ -72,17 +73,14 @@ header {
     cursor: pointer;
 }
 
-.logout-btn:hover {
-    background: #dc2626;
-}
+.logout-btn:hover { background: #dc2626; }
 
-/* MAIN CONTENT */
+/* MAIN */
 .main {
     margin-left: 220px;
     padding: 40px;
 }
 
-/* CARDS */
 .card {
     background: white;
     padding: 25px;
@@ -91,11 +89,7 @@ header {
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* HEADINGS */
-h2, h3, h4 {
-    margin-top: 0;
-    color: #111827;
-}
+h2, h3, h4 { margin-top: 0; }
 
 /* INPUTS */
 input, textarea {
@@ -113,7 +107,6 @@ input:focus, textarea:focus {
     border-color: #2563eb;
 }
 
-/* BUTTONS */
 .submit-btn {
     background: #2563eb;
     color: white;
@@ -122,12 +115,9 @@ input:focus, textarea:focus {
     padding: 10px 15px;
     border-radius: 6px;
     cursor: pointer;
-    transition: 0.2s;
 }
 
-.submit-btn:hover {
-    background: #1d4ed8;
-}
+.submit-btn:hover { background: #1d4ed8; }
 
 /* TABLE */
 table {
@@ -137,52 +127,53 @@ table {
     font-size: 14px;
 }
 
-table thead {
-    background: #f3f4f6;
-}
+thead { background: #f3f4f6; }
 
-table th {
+th, td {
     padding: 10px;
     text-align: left;
-    font-weight: 600;
-    border-bottom: 2px solid #e5e7eb;
-}
-
-table td {
-    padding: 10px;
     border-bottom: 1px solid #e5e7eb;
 }
 
-table tr:hover {
-    background: #f9fafb;
-}
+tr:hover { background: #f9fafb; }
 
-/* STATUS COLORS */
-.status-sent {
-    color: #16a34a;
-    font-weight: 600;
-}
+.status-sent { color: #16a34a; font-weight: 600; }
+.status-failed { color: #dc2626; font-weight: 600; }
 
-.status-failed {
-    color: #dc2626;
-    font-weight: 600;
-}
+.section { display: none; }
 
-/* SECTIONS */
-.section {
-    display: none;
-}
-
-/* DATE FILTER FLEX */
+/* REPORT FILTERS */
 .report-filters {
     display: flex;
     gap: 10px;
-    align-items: center;
     flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#report-range {
+    min-width: 260px;
+    cursor: pointer;
+    background: white;
+}
+
+.preset-btn {
+    background: #e5e7eb;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.preset-btn:hover {
+    background: #d1d5db;
 }
 </style>
 </head>
+
 <body>
+
 <header>🚀 SanReach SMS Dashboard</header>
 
 <div class="sidebar">
@@ -194,131 +185,190 @@ table tr:hover {
 </div>
 
 <div class="main">
-    <!-- Welcome Section -->
-    <div id="welcome-section" class="section">
-        <div class="card">
-            <h2>Welcome {{ username }}!</h2>
-            <p>Welcome to <strong>SanReach</strong> – your SMS dashboard.</p>
-            <p>Select an option from the left to get started.</p>
-        </div>
-    </div>
 
-    <!-- Send SMS Section -->
-    <div id="send-section" class="section">
-        <div class="card">
-            <h3>Send SMS</h3>
-            <form id="sms-form">
-                <label>Recipient Number</label>
-                <input type="text" name="number" placeholder="e.g. 917989106669" required>
-                <label>Type your message</label>
-                <textarea name="message" placeholder="Your message..." rows="4" required></textarea>
-                <button type="submit" class="submit-btn">Send SMS</button>
-            </form>
-            <div id="sms-response" style="margin-top:10px;"></div>
-        </div>
+<!-- Welcome -->
+<div id="welcome-section" class="section">
+    <div class="card">
+        <h2>Welcome {{ username }}!</h2>
+        <p>Select an option from the left to begin.</p>
     </div>
+</div>
 
-    <!-- Reports Section -->
-    <div id="report-section" class="section">
-        <div class="card">
-            <h3>Reports</h3>
-            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
-                <label>From:</label>
-                <input type="date" id="report-start-date">
-                <label>To:</label>
-                <input type="date" id="report-end-date">
-                <button id="report-search-btn" class="submit-btn" style="width:auto; padding:5px 10px;">Search</button>
-                <button id="report-export-btn" class="submit-btn" style="width:auto; padding:5px 10px; background:linear-gradient(135deg,#ff9a9e,#fecfef);">Export CSV</button>
+<!-- SEND SMS -->
+<div id="send-section" class="section">
+    <div class="card">
+        <h3>Send SMS</h3>
+        <form id="sms-form">
+            <label>Recipient Number</label>
+            <input type="text" name="number" required>
+
+            <label>Message</label>
+            <textarea name="message" rows="4" required></textarea>
+
+            <button type="submit" class="submit-btn">Send SMS</button>
+        </form>
+        <div id="sms-response"></div>
+    </div>
+</div>
+
+<!-- REPORTS -->
+<div id="report-section" class="section">
+    <div class="card">
+        <h3>Reports</h3>
+
+        <div class="report-filters">
+            <input type="text" id="report-range" placeholder="Select date range" readonly>
+
+            <button class="preset-btn" id="today-btn">Today</button>
+            <button class="preset-btn" id="last7-btn">Last 7 Days</button>
+            <button class="preset-btn" id="month-btn">This Month</button>
+
+            <button id="report-search-btn" class="submit-btn">Search</button>
+            <button id="report-export-btn" class="submit-btn" style="background:#10b981;">Export CSV</button>
+        </div>
+
+        <div id="report-table">
+            {% for day, logs in day_wise.items() %}
+            <div class="card">
+                <h4>{{ day }}</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                            <th>Sent At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sms in logs %}
+                        <tr>
+                            <td>{{ sms.dest }}</td>
+                            <td>{{ sms.message }}</td>
+                            <td class="{{ 'status-sent' if sms.status == 'Sent' else 'status-failed' }}">
+                                {{ sms.status }}
+                            </td>
+                            <td>{{ sms.sent_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            <div id="report-table">
-                {% for day, logs in day_wise.items() %}
-                <div class="card" style="margin-bottom:10px;">
-                    <h4>{{ day }}</h4>
-                    <table style="width:100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background: rgba(255,255,255,0.2);">
-                                <th>Recipient</th><th>Message</th><th>Status</th><th>Sent At</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for sms in logs %}
-                            <tr style="background: rgba(255,255,255,0.05);">
-                                <td>{{ sms.dest }}</td><td>{{ sms.message }}</td><td class="{{ 'status-sent' if sms.status == 'Sent' else 'status-failed' }}">
-    {{ sms.status }}
-</td><td>{{ sms.sent_at }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% endfor %}
-                {% if not day_wise %}
-                <p>No SMS records found.</p>
-                {% endif %}
-            </div>
+            {% endfor %}
+            {% if not day_wise %}
+            <p>No SMS records found.</p>
+            {% endif %}
         </div>
     </div>
+</div>
+
 </div>
 
 <script>
 // Section toggle
 const buttons = document.querySelectorAll(".toggle-btn");
 const sections = document.querySelectorAll(".section");
+
 function showSection(id){
     buttons.forEach(b=>b.classList.remove("active"));
-    const btn = document.querySelector(`.toggle-btn[data-target="${id}"]`);
+    const btn=document.querySelector(`.toggle-btn[data-target="${id}"]`);
     if(btn) btn.classList.add("active");
     sections.forEach(sec=>sec.style.display="none");
-    const target = document.getElementById(id);
-    if(target) target.style.display="block";
+    document.getElementById(id).style.display="block";
 }
+
 {% if show_section %}
 showSection("{{ show_section }}");
 {% else %}
 showSection("welcome-section");
 {% endif %}
-buttons.forEach(btn=>btn.addEventListener("click",()=>{showSection(btn.dataset.target);}));
+
+buttons.forEach(btn=>{
+    btn.addEventListener("click",()=>showSection(btn.dataset.target));
+});
+
+// Flatpickr Range
+let selectedStart=null, selectedEnd=null;
+
+const picker = flatpickr("#report-range",{
+    mode:"range",
+    dateFormat:"Y-m-d",
+    onClose:function(selectedDates, dateStr, instance){
+        if(selectedDates.length===2){
+            selectedStart=instance.formatDate(selectedDates[0],"Y-m-d");
+            selectedEnd=instance.formatDate(selectedDates[1],"Y-m-d");
+        }
+    }
+});
+
+// Presets
+function setRange(start,end){
+    picker.setDate([start,end],true);
+    selectedStart=start;
+    selectedEnd=end;
+}
+
+document.getElementById("today-btn").onclick=()=>{
+    const today=new Date().toISOString().split('T')[0];
+    setRange(today,today);
+};
+
+document.getElementById("last7-btn").onclick=()=>{
+    const today=new Date();
+    const past=new Date();
+    past.setDate(today.getDate()-6);
+    setRange(past.toISOString().split('T')[0],today.toISOString().split('T')[0]);
+};
+
+document.getElementById("month-btn").onclick=()=>{
+    const today=new Date();
+    const first=new Date(today.getFullYear(),today.getMonth(),1);
+    setRange(first.toISOString().split('T')[0],today.toISOString().split('T')[0]);
+};
+
+// Fetch reports
+function fetchReports(startDate,endDate){
+    fetch(`/reports?start=${startDate}&end=${endDate}`,{
+        headers:{"X-Requested-With":"XMLHttpRequest"}
+    })
+    .then(res=>res.text())
+    .then(html=>{
+        document.getElementById("report-table").innerHTML=html;
+    });
+}
+
+document.getElementById("report-search-btn").onclick=()=>{
+    if(!selectedStart||!selectedEnd){
+        alert("Please select a date range.");
+        return;
+    }
+    fetchReports(selectedStart,selectedEnd);
+};
+
+document.getElementById("report-export-btn").onclick=()=>{
+    if(!selectedStart||!selectedEnd){
+        alert("Please select a date range.");
+        return;
+    }
+    window.location=`/reports?start=${selectedStart}&end=${selectedEnd}&export=1`;
+};
+
 // AJAX Send SMS
 document.getElementById("sms-form").addEventListener("submit",function(e){
     e.preventDefault();
-    const formData = new FormData(this);
-    fetch("{{ url_for('send_sms') }}",{method:"POST",headers:{"X-Requested-With":"XMLHttpRequest"},body:formData})
+    const formData=new FormData(this);
+    fetch("{{ url_for('send_sms') }}",{
+        method:"POST",
+        headers:{"X-Requested-With":"XMLHttpRequest"},
+        body:formData
+    })
     .then(res=>res.json())
     .then(res=>{
-        const respDiv=document.getElementById("sms-response");
-        respDiv.innerHTML=res.message;
-        respDiv.style.color=res.status==="Sent"?"lightgreen":"orange";
+        const resp=document.getElementById("sms-response");
+        resp.innerHTML=res.message;
+        resp.style.color=res.status==="Sent"?"green":"red";
         if(res.status==="Sent") this.reset();
-    })
-    .catch(err=>{
-        const respDiv=document.getElementById("sms-response");
-        respDiv.innerHTML="⚠️ Error sending SMS";
-        respDiv.style.color="orange";
     });
-});
-
-// Reports date-range search
-function fetchReports(startDate=null,endDate=null){
-    let url="/reports";
-    if(startDate&&endDate) url+=`?start=${startDate}&end=${endDate}`;
-    fetch(url,{headers:{"X-Requested-With":"XMLHttpRequest"}})
-    .then(res=>res.text())
-    .then(html=>{document.getElementById("report-table").innerHTML=html;});
-}
-
-document.getElementById("report-search-btn").addEventListener("click",function(){
-    const start=document.getElementById("report-start-date").value;
-    const end=document.getElementById("report-end-date").value;
-    if(!start||!end){alert("Please select both start and end dates.");return;}
-    fetchReports(start,end);
-});
-
-// Export CSV button
-document.getElementById("report-export-btn").addEventListener("click",function(){
-    const start=document.getElementById("report-start-date").value;
-    const end=document.getElementById("report-end-date").value;
-    if(!start||!end){alert("Please select both start and end dates.");return;}
-    window.location=`/reports?start=${start}&end=${end}&export=csv`;
 });
 </script>
 
