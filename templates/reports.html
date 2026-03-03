@@ -1,2 +1,38 @@
-<h2>SMS Reports</h2>
-<p>Coming soon...</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SMS Reports</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; margin: 20px; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+th { background: #0072ff; color: white; }
+</style>
+</head>
+<body>
+<h1>SMS Reports for {{ session.get('username') }}</h1>
+
+{% for day, logs in day_wise.items() %}
+<h2>{{ day }}</h2>
+<table>
+    <tr>
+        <th>Time</th>
+        <th>Destination</th>
+        <th>Message</th>
+        <th>Status</th>
+    </tr>
+    {% for log in logs %}
+    <tr>
+        <td>{{ log.sent_at.strftime('%H:%M:%S') }}</td>
+        <td>{{ log.dest }}</td>
+        <td>{{ log.message }}</td>
+        <td>{{ log.status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endfor %}
+
+<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+</body>
+</html>

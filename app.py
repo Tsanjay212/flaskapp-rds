@@ -117,26 +117,51 @@ def send_sms():
     }
 
     headers = {"Content-Type": "application/json"}
+    status = "Failed"
 
     try:
         response = requests.post(api_url, headers=headers, data=json.dumps(payload))
         if response.status_code == 200:
             flash("SMS sent successfully!", "success")
+            status = "Sent"
         else:
             flash(f"Failed to send SMS: {response.text}", "error")
+            status = f"Error: {response.text}"
     except Exception as e:
         flash(f"Error sending SMS: {str(e)}", "error")
+        status = f"Exception: {str(e)}"
+
+    # Log SMS in database
+    cursor = db.cursor()
+    cursor.execute(
+        "INSERT INTO sms_logs (user_id, dest, message, status) VALUES (%s, %s, %s, %s)",
+        (session["user_id"], number, message_text, status)
+    )
+    db.commit()
 
     return redirect(url_for("dashboard"))
-
 # ----------------------------
 # Placeholder Reports Route
 # ----------------------------
 @app.route("/reports")
 @login_required
 def reports():
-    flash("Reports feature coming soon!", "info")
-    return redirect(url_for("dashboard"))
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT DATE(sent_at) as day, dest, message, status, sent_at
+        FROM sms_logs
+        WHERE user_id = %s
+        ORDER BY sent_at DESC
+    """, (session["user_id"],))
+    sms_data = cursor.fetchall()
+
+    # Group by day
+    from collections import defaultdict
+    day_wise = defaultdict(list)
+    for row in sms_data:
+        day_wise[row["day"]].append(row)
+
+    return render_template("reports.html", day_wise=day_wise)
 
 # ----------------------------
 # Run Flask
