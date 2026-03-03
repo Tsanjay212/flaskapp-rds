@@ -157,7 +157,7 @@ def send_sms():
     )
     db.commit()
 
-    if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest":
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return {"status": status, "message": message_flash}
 
     flash(message_flash)
@@ -193,8 +193,17 @@ def reports():
     for row in sms_data:
         day_wise[row["day"]].append(row)
 
-    if request.is_json or request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return render_template("dashboard.html", day_wise=day_wise, username=session.get("username"), show_section="report")
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        # Return only table HTML
+        table_html = ""
+        for day, logs in day_wise.items():
+            table_html += f'<div class="card" style="margin-bottom:10px;"><h4>{day}</h4><table style="width:100%; border-collapse: collapse;"><thead><tr style="background: rgba(255,255,255,0.2);"><th>Recipient</th><th>Message</th><th>Status</th><th>Sent At</th></tr></thead><tbody>'
+            for sms in logs:
+                table_html += f'<tr style="background: rgba(255,255,255,0.05);"><td>{sms["dest"]}</td><td>{sms["message"]}</td><td>{sms["status"]}</td><td>{sms["sent_at"]}</td></tr>'
+            table_html += "</tbody></table></div>"
+        if not day_wise:
+            table_html = "<p>No SMS records found for this date range.</p>"
+        return table_html
 
     return render_template("dashboard.html", day_wise=day_wise, username=session.get("username"), show_section="report")
 
