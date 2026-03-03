@@ -3,258 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <title>SanReach Dashboard</title>
-
 <style>
-:root{
-  --bg-main:#f4f6f9;
-  --bg-card:#ffffff;
-  --sidebar-bg:#1f2937;
-  --sidebar-hover:#374151;
-  --primary:#2563eb;
-  --primary-hover:#1d4ed8;
-  --danger:#ef4444;
-  --text-dark:#111827;
-  --text-light:#f9fafb;
-  --border:#e5e7eb;
-}
-
-/* Dark Mode */
-body.dark{
-  --bg-main:#111827;
-  --bg-card:#1f2937;
-  --sidebar-bg:#0f172a;
-  --sidebar-hover:#1e293b;
-  --primary:#3b82f6;
-  --primary-hover:#2563eb;
-  --text-dark:#f9fafb;
-  --border:#374151;
-}
-
-body{
-  margin:0;
-  font-family:"Segoe UI",sans-serif;
-  background:var(--bg-main);
-  color:var(--text-dark);
-  transition:0.3s;
-}
-
-/* Header */
-header{
-  height:70px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 30px;
-  font-size:1.4em;
-  font-weight:bold;
-  background:var(--bg-card);
-  border-bottom:1px solid var(--border);
-}
-
-/* Toggle */
-.theme-toggle{
-  cursor:pointer;
-  background:var(--primary);
-  color:white;
-  border:none;
-  padding:8px 15px;
-  border-radius:20px;
-}
-
-.theme-toggle:hover{
-  background:var(--primary-hover);
-}
-
-/* Sidebar */
-.sidebar{
-  position:fixed;
-  top:70px; /* below header */
-  left:0;
-  width:220px;
-  height:calc(100vh - 70px);
-  background:var(--sidebar-bg);
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
-
-.sidebar-menu{
-  padding-top:20px;
-}
-
-.sidebar button{
-  background:none;
-  border:none;
-  color:var(--text-light);
-  text-align:left;
-  padding:14px 20px;
-  cursor:pointer;
-  width:100%;
-  border-left:4px solid transparent;
-  transition:0.3s;
-}
-
-.sidebar button:hover,
-.sidebar button.active{
-  background:var(--sidebar-hover);
-  border-left:4px solid var(--primary);
-}
-
-/* Logout */
-.logout-container{
-  padding:20px;
-}
-
-.logout-btn{
-  width:100%;
-  background:var(--danger);
-  color:white;
-  font-weight:bold;
-  border:none;
-  padding:10px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-.logout-btn:hover{
-  opacity:0.9;
-}
-
-/* Main */
-.main{
-  margin-left:220px;
-  padding:40px;
-}
-
-/* Card */
-.card{
-  background:var(--bg-card);
-  padding:20px;
-  border-radius:12px;
-  margin-bottom:20px;
-  border:1px solid var(--border);
-  box-shadow:0 4px 12px rgba(0,0,0,0.05);
-}
-
-input, textarea{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-  border-radius:8px;
-  border:1px solid var(--border);
-  background:transparent;
-  color:var(--text-dark);
-}
-
-button.submit-btn{
-  background:var(--primary);
-  color:white;
-  font-weight:bold;
-  border:none;
-  padding:10px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-button.submit-btn:hover{
-  background:var(--primary-hover);
-}
-
-.section{display:none;}
+body { margin:0; font-family:"Segoe UI",sans-serif; background:linear-gradient(135deg,#ff6ec7,#845ec2,#00c6ff); color:#fff;}
+header {padding:20px;text-align:center;font-size:2em;font-weight:bold;}
+.sidebar {height:100vh;width:200px;position:fixed;top:0;left:0;background:linear-gradient(180deg,#0b3d91,#1a5bb8);padding-top:60px;display:flex;flex-direction:column;}
+.sidebar button {background:none;border:none;color:white;text-align:left;padding:15px 20px;font-size:1em;cursor:pointer;width:100%;border-left:4px solid transparent;transition:all 0.3s;}
+.sidebar button:hover,.sidebar button.active {background:rgba(255,255,255,0.2);border-left:4px solid #fff;}
+.main {margin-left:200px;padding:40px;}
+.card {background:rgba(255,255,255,0.1);padding:20px;border-radius:12px;margin-bottom:20px;}
+input,textarea,button {width:100%;padding:10px;margin:8px 0;border-radius:8px;border:none;}
+button.submit-btn {background:linear-gradient(135deg,#00c6ff,#0072ff);color:white;font-weight:bold;cursor:pointer;}
+button.submit-btn:hover {opacity:0.9;}
+.logout-btn {position:fixed;bottom:20px;left:20px;width:160px;background:linear-gradient(135deg,#ff5f6d,#ffc371);color:white;font-weight:bold;border:none;padding:10px;border-radius:8px;cursor:pointer;}
+.logout-btn:hover {opacity:0.9;}
+.section {display:none;}
+table th,table td {padding:8px;border:1px solid rgba(255,255,255,0.2);text-align:left;}
 </style>
 </head>
-
 <body>
-
-<header>
-  <div>SanReach SMS Dashboard</div>
-  <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
-</header>
+<header>🚀 SanReach SMS Dashboard</header>
 
 <div class="sidebar">
-  
-  <div class="sidebar-menu">
-      <button class="toggle-btn" data-target="send-section">Send SMS</button>
-      <button class="toggle-btn" data-target="report-section">Reports</button>
-  </div>
-
-  <div class="logout-container">
-      <form method="GET" action="{{ url_for('logout') }}">
-          <button class="logout-btn" type="submit">Logout</button>
-      </form>
-  </div>
-
+    <button class="toggle-btn" data-target="send-section">Send SMS</button>
+    <button class="toggle-btn" data-target="report-section">Reports</button>
+    <form method="GET" action="{{ url_for('logout') }}">
+        <button class="logout-btn" type="submit">Logout</button>
+    </form>
 </div>
 
 <div class="main">
+    <!-- Welcome Section -->
+    <div id="welcome-section" class="section">
+        <div class="card">
+            <h2>Welcome {{ username }}!</h2>
+            <p>Welcome to <strong>SanReach</strong> – your SMS dashboard.</p>
+            <p>Select an option from the left to get started.</p>
+        </div>
+    </div>
 
-<div id="welcome-section" class="section">
-  <div class="card">
-    <h2>Welcome {{ username }}!</h2>
-    <p>Select an option from the sidebar.</p>
-  </div>
-</div>
+    <!-- Send SMS Section -->
+    <div id="send-section" class="section">
+        <div class="card">
+            <h3>Send SMS</h3>
+            <form id="sms-form">
+                <label>Recipient Number</label>
+                <input type="text" name="number" placeholder="e.g. 917989106669" required>
+                <label>Type your message</label>
+                <textarea name="message" placeholder="Your message..." rows="4" required></textarea>
+                <button type="submit" class="submit-btn">Send SMS</button>
+            </form>
+            <div id="sms-response" style="margin-top:10px;"></div>
+        </div>
+    </div>
 
-<div id="send-section" class="section">
-  <div class="card">
-    <h3>Send SMS</h3>
-    <form>
-      <input type="text" placeholder="Recipient number" required>
-      <textarea rows="4" placeholder="Your message..." required></textarea>
-      <button class="submit-btn">Send SMS</button>
-    </form>
-  </div>
-</div>
-
-<div id="report-section" class="section">
-  <div class="card">
-    <h3>Reports</h3>
-    <p>No SMS records found.</p>
-  </div>
-</div>
-
+    <!-- Reports Section -->
+    <div id="report-section" class="section">
+        <div class="card">
+            <h3>Reports</h3>
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
+                <label>From:</label>
+                <input type="date" id="report-start-date">
+                <label>To:</label>
+                <input type="date" id="report-end-date">
+                <button id="report-search-btn" class="submit-btn" style="width:auto; padding:5px 10px;">Search</button>
+                <button id="report-export-btn" class="submit-btn" style="width:auto; padding:5px 10px; background:linear-gradient(135deg,#ff9a9e,#fecfef);">Export CSV</button>
+            </div>
+            <div id="report-table">
+                {% for day, logs in day_wise.items() %}
+                <div class="card" style="margin-bottom:10px;">
+                    <h4>{{ day }}</h4>
+                    <table style="width:100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(255,255,255,0.2);">
+                                <th>Recipient</th><th>Message</th><th>Status</th><th>Sent At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sms in logs %}
+                            <tr style="background: rgba(255,255,255,0.05);">
+                                <td>{{ sms.dest }}</td><td>{{ sms.message }}</td><td>{{ sms.status }}</td><td>{{ sms.sent_at }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endfor %}
+                {% if not day_wise %}
+                <p>No SMS records found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-// Theme Toggle
-function toggleTheme(){
-  const body=document.body;
-  const btn=document.querySelector(".theme-toggle");
-  body.classList.toggle("dark");
-
-  if(body.classList.contains("dark")){
-    localStorage.setItem("theme","dark");
-    btn.innerHTML="☀ Light Mode";
-  }else{
-    localStorage.setItem("theme","light");
-    btn.innerHTML="🌙 Dark Mode";
-  }
-}
-
-window.onload=function(){
-  const savedTheme=localStorage.getItem("theme");
-  if(savedTheme==="dark"){
-    document.body.classList.add("dark");
-    document.querySelector(".theme-toggle").innerHTML="☀ Light Mode";
-  }
-};
-
-// Section Toggle
-const buttons=document.querySelectorAll(".toggle-btn");
-const sections=document.querySelectorAll(".section");
-
+// Section toggle
+const buttons = document.querySelectorAll(".toggle-btn");
+const sections = document.querySelectorAll(".section");
 function showSection(id){
-  buttons.forEach(b=>b.classList.remove("active"));
-  const btn=document.querySelector(`.toggle-btn[data-target="${id}"]`);
-  if(btn) btn.classList.add("active");
-  sections.forEach(sec=>sec.style.display="none");
-  const target=document.getElementById(id);
-  if(target) target.style.display="block";
+    buttons.forEach(b=>b.classList.remove("active"));
+    const btn = document.querySelector(`.toggle-btn[data-target="${id}"]`);
+    if(btn) btn.classList.add("active");
+    sections.forEach(sec=>sec.style.display="none");
+    const target = document.getElementById(id);
+    if(target) target.style.display="block";
+}
+{% if show_section %}
+showSection("{{ show_section }}");
+{% else %}
+showSection("welcome-section");
+{% endif %}
+buttons.forEach(btn=>btn.addEventListener("click",()=>{showSection(btn.dataset.target);}));
+// AJAX Send SMS
+document.getElementById("sms-form").addEventListener("submit",function(e){
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch("{{ url_for('send_sms') }}",{method:"POST",headers:{"X-Requested-With":"XMLHttpRequest"},body:formData})
+    .then(res=>res.json())
+    .then(res=>{
+        const respDiv=document.getElementById("sms-response");
+        respDiv.innerHTML=res.message;
+        respDiv.style.color=res.status==="Sent"?"lightgreen":"orange";
+        if(res.status==="Sent") this.reset();
+    })
+    .catch(err=>{
+        const respDiv=document.getElementById("sms-response");
+        respDiv.innerHTML="⚠️ Error sending SMS";
+        respDiv.style.color="orange";
+    });
+});
+
+// Reports date-range search
+function fetchReports(startDate=null,endDate=null){
+    let url="/reports";
+    if(startDate&&endDate) url+=`?start=${startDate}&end=${endDate}`;
+    fetch(url,{headers:{"X-Requested-With":"XMLHttpRequest"}})
+    .then(res=>res.text())
+    .then(html=>{document.getElementById("report-table").innerHTML=html;});
 }
 
-showSection("welcome-section");
-buttons.forEach(btn=>btn.addEventListener("click",()=>{showSection(btn.dataset.target);}))
+document.getElementById("report-search-btn").addEventListener("click",function(){
+    const start=document.getElementById("report-start-date").value;
+    const end=document.getElementById("report-end-date").value;
+    if(!start||!end){alert("Please select both start and end dates.");return;}
+    fetchReports(start,end);
+});
 
+// Export CSV button
+document.getElementById("report-export-btn").addEventListener("click",function(){
+    const start=document.getElementById("report-start-date").value;
+    const end=document.getElementById("report-end-date").value;
+    if(!start||!end){alert("Please select both start and end dates.");return;}
+    window.location=`/reports?start=${start}&end=${end}&export=csv`;
+});
 </script>
 
 </body>
