@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SanReach Dashboard</title>
+<style>
+    body { background:#121212; color:#fff; font-family: 'Segoe UI', sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; }
+    h1 { color:#00BFFF; }
+    a { color:#FF6347; text-decoration:none; margin-top:1rem; font-weight:bold; }
+</style>
+</head>
+<body>
+    <h1>Hello, {{ username }}!</h1>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

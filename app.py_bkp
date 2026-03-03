@@ -1,0 +1,112 @@
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+import MySQLdb
+from werkzeug.security import generate_password_hash, check_password_hash
+import os
+
+app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
+
+# ----------------------
+# Database Configuration
+# ----------------------
+db_host = os.environ.get("MYSQL_HOST", "sanreach_db")
+db_user = os.environ.get("MYSQL_USER", "flaskuser")
+db_password = os.environ.get("MYSQL_PASSWORD", "Tsanjay@212")
+db_name = os.environ.get("MYSQL_DB", "sanreach")
+
+def get_db_connection():
+    """Establish a new database connection"""
+    return MySQLdb.connect(
+        host=db_host,
+        user=db_user,
+        passwd=db_password,
+        db=db_name,
+        charset='utf8'
+    )
+
+# ----------------------
+# Routes
+# ----------------------
+
+@app.route("/")
+def home():
+    if "user_id" in session:
+        return redirect(url_for("dashboard"))
+    return redirect(url_for("login"))
+
+# ----------------------
+# LOGIN
+# ----------------------
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE username=%s", (username,))
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        if user and check_password_hash(user[3], password):
+            session["user_id"] = user[0]
+            session["username"] = user[1]
+            flash(f"Welcome back, {user[1]}!", "success")
+            return redirect(url_for("dashboard"))
+        else:
+            flash("Invalid credentials!", "danger")
+    return render_template("auth.html")
+
+# ----------------------
+# REGISTER
+# ----------------------
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        email = request.form["email"]
+        password = generate_password_hash(request.form["password"])
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        try:
+            cur.execute(
+                "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)",
+                (username, email, password)
+            )
+            conn.commit()
+            flash("Registration successful! Please login.", "success")
+        except MySQLdb.IntegrityError:
+            flash("User already exists!", "danger")
+        finally:
+            cur.close()
+            conn.close()
+
+    return render_template("auth.html")
+
+# ----------------------
+# DASHBOARD
+# ----------------------
+@app.route("/dashboard")
+def dashboard():
+    if "user_id" not in session:
+        flash("Please login first.", "warning")
+        return redirect(url_for("login"))
+    return render_template("dashboard.html", username=session["username"])
+
+# ----------------------
+# LOGOUT
+# ----------------------
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Logged out successfully.", "success")
+    return redirect(url_for("login"))
+
+# ----------------------
+# RUN APP
+# ----------------------
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000, debug=True)

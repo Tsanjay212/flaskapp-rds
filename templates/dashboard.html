@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SanReach Dashboard</title>
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #ff6ec7, #845ec2, #00c6ff); /* Pink → Purple → Cyan */
+    color: #fff;
+}
+
+header {
+    padding: 20px;
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+/* Sidebar */
+.sidebar {
+    height: 100vh;
+    width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: linear-gradient(180deg, #0b3d91, #1a5bb8); /* Darker blues */
+    padding-top: 60px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar button {
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    padding: 15px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    width: 100%;
+    border-left: 4px solid transparent;
+    transition: all 0.3s;
+}
+
+.sidebar button:hover, .sidebar button.active {
+    background: rgba(255,255,255,0.2);
+    border-left: 4px solid #fff;
+}
+
+/* Main content */
+.main {
+    margin-left: 200px;
+    padding: 40px;
+}
+
+.card {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+input, textarea, button {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: none;
+}
+
+button.submit-btn {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button.submit-btn:hover {
+    opacity: 0.9;
+}
+
+.flash {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.3);
+}
+
+.logout-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 160px;
+    background: linear-gradient(135deg, #ff5f6d, #ffc371);
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    opacity: 0.9;
+}
+
+/* Hide sections by default */
+.section {
+    display: none;
+}
+</style>
+</head>
+<body>
+<header>🚀 SanReach SMS Dashboard</header>
+
+<div class="sidebar">
+    <button class="toggle-btn" data-target="send-section">Send SMS</button>
+    <button class="toggle-btn" data-target="report-section">Reports</button>
+    <form method="GET" action="{{ url_for('logout') }}">
+        <button class="logout-btn" type="submit">Logout</button>
+    </form>
+</div>
+
+<div class="main">
+    <!-- Welcome Section -->
+    <div id="welcome-section" class="section" style="display:block;">
+        <div class="card">
+            <h2>Welcome {{ session.get('username', 'User') }}!</h2>
+            <p>Welcome to <strong>SanReach</strong> – your SMS dashboard.</p>
+            <p>Select an option from the left to get started.</p>
+        </div>
+    </div>
+
+    <!-- Send SMS Section -->
+    <div id="send-section" class="section">
+        <div class="card">
+            <h3>Send SMS</h3>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, msg in messages %}
+                  <div class="flash">{{ msg }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+            <form method="POST" action="{{ url_for('send_sms') }}">
+                <label>Recipient Number</label>
+                <input type="text" name="number" placeholder="e.g. 917989106669" required>
+
+                <label>Type your message</label>
+                <textarea name="message" placeholder="Your message..." rows="4" required></textarea>
+
+                <button type="submit" class="submit-btn">Send SMS</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reports Section -->
+    <div id="report-section" class="section">
+        <div class="card">
+            <h3>Reports</h3>
+            <p>View sent messages, delivery status, and analytics here.</p>
+            <a href="{{ url_for('reports') }}"><button class="submit-btn">View Reports</button></a>
+        </div>
+    </div>
+</div>
+
+<script>
+const buttons = document.querySelectorAll(".toggle-btn");
+const sections = document.querySelectorAll(".section");
+
+buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        // Remove active from all buttons
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        // Hide all sections
+        sections.forEach(sec => sec.style.display = "none");
+
+        // Show target section
+        const target = document.getElementById(btn.dataset.target);
+        if(target) target.style.display = "block";
+    });
+});
+</script>
+
+</body>
+</html>
