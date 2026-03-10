@@ -11,8 +11,19 @@ import time
 import csv
 from io import StringIO
 
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
+
+# ----------------------------
+# Test route to check load balancer
+# ----------------------------
+import socket
+
+@app.route("/server")
+def server():
+    return f"Served from: {socket.gethostname()}"
+
 
 # ----------------------------
 # Database connection
@@ -34,6 +45,7 @@ for i in range(10):
 
 if db is None:
     raise Exception("❌ Could not connect to the database after 10 retries")
+
 
 # ----------------------------
 # Login Required Decorator
