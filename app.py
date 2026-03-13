@@ -28,24 +28,28 @@ def server():
 # ----------------------------
 # Database connection
 # ----------------------------
+DB_HOST = os.environ.get("MYSQL_HOST", "flaskdb.cliokksq2tvo.ap-south-2.rds.amazonaws.com")
+DB_USER = os.environ.get("MYSQL_USER", "flaskdb")
+DB_PASSWORD = os.environ.get("MYSQL_PASSWORD", "Tsanjay212")
+DB_NAME = os.environ.get("MYSQL_DB", "sanreach")  # replace with your database name if different
+
 db = None
 for i in range(10):
     try:
         db = mysql.connector.connect(
-            host=os.environ.get("MYSQL_HOST", "sanreach_db"),
-            user=os.environ.get("MYSQL_USER", "flaskuser"),
-            password=os.environ.get("MYSQL_PASSWORD", "Tsanjay@212"),
-            database=os.environ.get("MYSQL_DB", "sanreach")
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME
         )
         print("✅ DB connected")
         break
     except Error as e:
-        print(f"⚠️ DB connection failed, retrying... ({i+1}/10)")
+        print(f"⚠️ DB connection failed, retrying... ({i+1}/10) - {e}")
         time.sleep(3)
 
 if db is None:
     raise Exception("❌ Could not connect to the database after 10 retries")
-
 
 # ----------------------------
 # Login Required Decorator
